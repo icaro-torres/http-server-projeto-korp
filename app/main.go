@@ -9,7 +9,7 @@ import (
 
 type ResponseBody struct {
 	Nome    string `json:"nome"`
-	Horario string `json:"horario`
+	Horario string `json:"horario"`
 }
 
 func projetoKorpHandler(w http.ResponseWriter, r *http.Request) {
