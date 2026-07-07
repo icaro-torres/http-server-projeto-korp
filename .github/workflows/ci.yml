@@ -1,0 +1,61 @@
+name: CI - Validação
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+  
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  validate-go:
+    name: Validar Código Go
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./app
+      steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+
+      - name: Baixar dependências
+        run: go mod download
+
+      - name: Análise estática
+        run: go vet ./...
+
+      - name: Teste de Build
+        run: go build -v ./...
+
+  validate-infra:
+    name: Validar Docker e Compose
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Linting do Dockerfile (Hadolint)
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ./app/Dockerfile
+          ignore: DL3018
+
+      - name: Validar os arquivos Compose dinamicamente
+        run: |
+          echo "Buscando e validando arquivos Compose na raiz do projeto..."
+
+          find . -maxdepth 1 \( -name "docker-compose*.yaml" -o -name "docker-compose*.yml" \) | while read compose_file; do
+            echo "----------------------------------------"
+            echo "Validando sintaxe de: $compose_file"
+            docker compose -f "$compose_file" config > /dev/null
+            echo "$compose_file está válido!"
+          done
