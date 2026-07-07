@@ -18,7 +18,7 @@ jobs:
     defaults:
       run:
         working-directory: ./app
-      steps:
+    steps:
       - name: Checkout do código
         uses: actions/checkout@v4
 
@@ -53,7 +53,7 @@ jobs:
         run: |
           echo "Buscando e validando arquivos Compose na raiz do projeto..."
 
-          find . -maxdepth 1 \( -name "docker-compose*.yaml" -o -name "docker-compose*.yml" \) | while read compose_file; do
+          find . -maxdepth 3 \( -name "docker-compose*.yaml" -o -name "docker-compose*.yml" \) | while read compose_file; do
             echo "----------------------------------------"
             echo "Validando sintaxe de: $compose_file"
             docker compose -f "$compose_file" config > /dev/null
