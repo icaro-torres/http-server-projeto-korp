@@ -1,0 +1,43 @@
+- name: Automação e Provisionamento do Projeto Korp
+  hosts: local
+  connection: local
+  become: yes
+
+  tasks:
+    - name: 1. Instalar o DOcker e DOcker Compose (Arch Linux)
+      pacman:
+        name:
+          - docker
+          - docker-compose
+        state: present
+
+    - name: 1.1 Garantir que o daemon do Docker está habilitado e rodando
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: 2. Criar a rede Docker
+      command: docker network create --driver bridge http-server-projeto-korp_korp-network
+      ignore_errors: yes
+
+    - name: 3 e 4. Build da imagem e execução dos containers com Docker Compose
+      command: docker compose up -d --build
+
+    - name: Aguardar 5 segundos para os serviços inicializarem
+      pause:
+        seconds: 5
+
+    - name: 5. Validar o funcionamento do serviço através de uma requisição HTTP
+      uri:
+        url: http://localhost:80/projeto-korp
+        method: GET
+        return_content: yes
+      register: api_response
+      until: api_response.status == 200
+      retries: 5
+      delay: 2
+
+    - name: 6. Exibir a resposta da requisição HTTP no console.
+      debug:
+        msg: "Sucesso! A resposta do endpoint foi: {{ api_response.json }}"
