@@ -1,0 +1,42 @@
+{
+  "title": "Projeto Korp - Monitoramento",
+  "refresh": "5s",
+  "panels": [
+    {
+      "type": "stat",
+      "title": "Disponibilidade do Serviço",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "probe_success{job=\"blackbox_disponibilidade\"}",
+          "legendFormat": "Status"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            {
+              "options": {
+                "0": { "text": "DOWN", "color": "red" },
+                "1": { "text": "UP", "color": "green" }
+              },
+              "type": "value"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "timeseries",
+      "title": "Volume de Requisições por Status",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "sum(rate(nginx_http_requests_total[1m]))",
+          "legendFormat": "Requisições NGINX"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 38
+}

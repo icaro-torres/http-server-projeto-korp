@@ -8,6 +8,7 @@ services:
       context: ./app
       dockerfile: Dockerfile
     container_name: http-server-projeto-korp
+    command: ["./http-server-projeto-korp"]
     networks:
       - korp-network
 
@@ -22,3 +23,38 @@ services:
       - korp-network
     depends_on:
       - http-server-projeto-korp
+
+  prometheus:
+    image: prom/prometheus:v3.13.0
+    container_name: prometheus
+    volumes:
+      - ./o11y/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - korp-network
+
+  grafana:
+    image: grafana/grafana:13.0.3
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./o11y/grafana/provisioning:/etc/grafana/provisioning
+      - ./o11y/grafana/dashboards:/var/lib/grafana/dashboards
+    networks:
+      - korp-network
+
+  nginx-exporter:
+    image: nginx/nginx-prometheus-exporter:1.5.1
+    container_name: nginx-exporter
+    command:
+      - -nginx.scrape-uri=http://nginx-proxy:80/metrics
+    networks:
+      - korp-network
+
+  blackbox-exporter:
+    image: prom/blackbox-exporter:v0.28.0
+    container_name: blackbox-exporter
+    networks:
+      - korp-network
