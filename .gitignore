@@ -1,0 +1,27 @@
+# IntelliJ IDEA / JetBrains
+.idea/
+*.iml
+*.iws
+out/
+gen/
+
+# VS Code
+.vscode/
+
+# Binários Golang (caso rode um go build local)
+/app/http-server-projeto-korp
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Ansible
+*.retry
+ansible.log
+
+# OS / Sistema
+.DS_Store
+Thumbs.db
