@@ -4,7 +4,7 @@
   become: yes
 
   tasks:
-    - name: 1. Instalar o DOcker e DOcker Compose (Arch Linux)
+    - name: 1. Instalar o Docker e Docker Compose (Arch Linux)
       pacman:
         name:
           - docker
